@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Pick your game! 🎮
+{% endblock %}
+
+
+
+{% block body %}
+<div class="container my-3">
+    <div class="row text-center justify-content-center g-4">
+        <!-- Card template -->
+
+        <div class="col-sm-6 col-md-4 col-xl-3">
+            <div class="card game-card bg-dark text-light h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-img-wrapper position-relative">
+                    <img src="/static/tic.png" class="card-img-top" alt="Game Image" style="object-fit: cover; vh-100;">
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h3>Tic-Tac-Toe</h3>
+                    <p class="card-text flex-grow-1">Think you can outsmart a few X’s and O’s? Prove it.</p>
+                    <a href="/tic" class="btn btn-primary mt-2 game-btn">Play Now</a>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-6 col-md-4 col-xl-3">
+            <div class="card game-card bg-dark text-light h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-img-wrapper position-relative">
+                    <img src="/static/trivia.png" class="card-img-top" alt="Game Image" style="object-fit: cover; vh-100;">
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h3>Trivia</h3>
+                    <p class="card-text flex-grow-1">Think that you know it all? Let's put that to the test.</p>
+                    <a href="/trivia" class="btn btn-primary mt-2 game-btn">Play Now</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-4 col-xl-3">
+            <div class="card game-card bg-dark text-light h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-img-wrapper position-relative">
+                    <img src="/static/snake.png" class="card-img-top" alt="Game Image" style="object-fit: cover; vh-100;">
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h3>Snake</h3>
+                    <p class="card-text flex-grow-1">Stay hungry. Eat cubes. Don’t bite yourself.</p>
+                    <a href="/snake" class="btn btn-primary mt-2 game-btn">Play Now</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

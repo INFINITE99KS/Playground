@@ -1,0 +1,194 @@
+{% extends "layout.html" %}
+{% block title %}
+Tic-tac-toe
+{% endblock %}
+
+{% block body %}
+     <div class="container">
+     <div class="row justify-content-center">
+         <div class="col-10 col-sm-8 col-md-6 col-lg-4 mb-3">
+             <div class="card bg-dark text-light h-100 rounded-4 overflow-hidden position-relative p-2">
+                 <div class="card-body d-flex flex-column">
+                     <h3>Tic-Tac-Toe</h3>
+                     <p class="card-text flex-grow-1">Think you can outsmart a few X’s and O’s? Prove it.</p>
+
+                     <div id="alert-container" class="mt-2"></div>
+                     <div class="boardgame">
+                         <div class="cell" onclick="occupy(event)" data-index="0"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="1"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="2"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="3"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="4"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="5"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="6"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="7"></div>
+                         <div class="cell" onclick="occupy(event)" data-index="8"></div>
+                     </div>
+
+                     <div class="text-center mt-3">
+                         <button class="btn btn-info w-100" onclick="restartGame()">Restart Game</button>
+                     </div>
+
+                 </div>
+             </div>
+         </div>
+     </div>
+</div>
+
+<script>
+let board = new Array(9).fill(null);
+let currentPlayer = `X`; // Human is X
+let gameOver = false;
+let winner = null;
+let winningConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8], [2, 4, 6], [0, 3, 6], [1, 4, 7], [2, 5, 8]];
+let playerX = [];
+let playerO = []; // Computer is O
+
+/**
+ * Displays a Bootstrap alert message in the #alert-container
+ * @param {string} message The text to display
+* @param {string} type The Bootstrap alert type (e.g., 'danger', 'warning', 'info', 'success')
+ */
+function showAlert(message, type = 'warning') {
+    const alertContainer = document.getElementById('alert-container');
+    const alertHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    alertContainer.innerHTML = alertHTML;
+
+    // Auto-clear logic (3 seconds)
+    // We only auto-clear non-win/loss/draw messages
+    if (type === 'warning' || type === 'danger' && !gameOver) {
+         setTimeout(() => {
+            const alertElement = alertContainer.querySelector('.alert');
+            if (alertElement) {
+                try {
+                    const bsAlert = new bootstrap.Alert(alertElement);
+                    bsAlert.close();
+                } catch (e) {
+                    alertContainer.innerHTML = '';
+                }
+            }
+        }, 3000); // 3 seconds
+    }
+}
+
+function occupy(event) {
+    let trigger = event.srcElement;
+    let trigger_index = trigger.dataset.index;
+    if (gameOver) {
+        showAlert(`The game is already over! Press Restart.`, 'warning');
+        return;
+    }
+
+    if (currentPlayer === 'O' && event.isTrusted) {
+        return;
+    }
+
+    if (board[trigger_index] === null) {
+        board[trigger_index] = currentPlayer;
+        if (currentPlayer === `X`) playerX.push(Number(trigger_index));
+        else playerO.push(Number(trigger_index));
+
+        trigger.innerHTML = currentPlayer;
+        currentPlayer = (currentPlayer == `X`) ? `O` : `X`; // Switch turn
+
+        let winnerIntialCheck = checkWinner(playerX, `X`);
+        winner = (winnerIntialCheck != null) ? winnerIntialCheck : checkWinner(playerO, `O`);
+        if (winner != null) gameOver = true;
+        else gameOver = board.every(cell => cell !== null); // Check for draw
+
+        checkState();
+
+        if (currentPlayer === 'O' && !gameOver) {
+            setTimeout(computerMove, 500);
+        }
+
+    }
+    else {
+        if (event.isTrusted) {
+            showAlert("That cell is already occupied!", 'warning');
+        }
+        return;
+    }
+}
+
+function computerMove() {
+    if (gameOver) return;
+
+    let emptyCells = [];
+    for (let i =0; i < board.length; i++) {
+        if (board[i] === null) {
+            emptyCells.push(i);
+        }
+    }
+
+    if (emptyCells.length === 0) return;
+
+    let randomIndex = Math.floor(Math.random() * emptyCells.length);
+    let ai_index = emptyCells[randomIndex];
+    let aiCell = document.querySelector(`[data-index="${ai_index}"]`);
+
+    if (aiCell) {
+        aiCell.click();
+  _}
+}
+
+function checkState() {
+    if (gameOver && winner == null) {
+        // Draw condition
+        showAlert("Game ended in a draw!", 'info');
+        document.querySelector('.boardgame').style.filter = "brightness(0.4)";
+        return;
+    }
+    else if (winner != null) {
+        // Win condition
+        let alertType = (winner === 'X') ? 'success' : 'danger'; // Green for X, Red for O
+        showAlert(`${winner} Won!`, alertType);
+
+        document.querySelector('.boardgame').style.filter = "brightness(0.4)";
+    }
+}
+
+function checkWinner(playerMoves, charPlayer) {
+    for (condition of winningConditions) {
+        let conditionFound = true;
+        for (cell of condition) {
+            if (!playerMoves.includes(cell)) {
+                conditionFound = false;
+                break;
+    _       }
+        }
+        if (conditionFound) {
+            return charPlayer;
+        }
+    }
+    return null;
+}
+
+function restartGame() {
+    // 1. Reset all game state variables
+    board = new Array(9).fill(null);
+    currentPlayer = 'X'; // Human (X) always starts
+    gameOver = false;
+    winner = null;
+    playerX = [];
+    playerO = [];
+
+    // 2. Clear the visual board (remove X's and O's from cells)
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+        cell.innerHTML = '';
+    });
+
+    // 3. Remove the brightness filter from the board
+    document.querySelector('.boardgame').style.filter = "brightness(1.0)";
+
+    // 4. Clear any old win/draw/error alerts
+    document.getElementById('alert-container').innerHTML = '';
+}
+</script>
+{% endblock %}

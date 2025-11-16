@@ -1,0 +1,8 @@
+#gameBoard{
+    border: 3px solid;
+}
+
+.snake-game-card {
+    max-width: 900px;
+    border: 1px solid #333;
+}
